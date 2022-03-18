@@ -1,5 +1,7 @@
+import 'package:invoicer/data/personal_details_sql_helper.dart';
+
 class PersonalDetailsModel {
-  int id;
+  int id = 1;
   String forename;
   String surname;
   String cis4p;
@@ -28,36 +30,36 @@ class PersonalDetailsModel {
 
   factory PersonalDetailsModel.fromMap(Map<String, dynamic> map) {
     var model = PersonalDetailsModel(
-        map['id'] ?? 0,
-        map['forename'] ?? '',
-        map['surname'] ?? '',
-        map['cis4p'] ?? '',
-        map['nationalInsurance'] ?? '',
-        map['company'] ?? '',
-        map['mobile'] ?? '',
-        map['email'] ?? '',
-        map['address'] ?? '',
-        map['town'] ?? '',
-        map['county'] ?? '',
-        map['postcode'] ?? '');
+        map[PersonalDetailsSqlHelper.colId] ?? 1,
+        map[PersonalDetailsSqlHelper.colForename] ?? '',
+        map[PersonalDetailsSqlHelper.colSurname] ?? '',
+        map[PersonalDetailsSqlHelper.colCis4p] ?? '',
+        map[PersonalDetailsSqlHelper.colNationalInsurance] ?? '',
+        map[PersonalDetailsSqlHelper.colCompany] ?? '',
+        map[PersonalDetailsSqlHelper.colMobile] ?? '',
+        map[PersonalDetailsSqlHelper.colEmail] ?? '',
+        map[PersonalDetailsSqlHelper.colAddress] ?? '',
+        map[PersonalDetailsSqlHelper.colTown] ?? '',
+        map[PersonalDetailsSqlHelper.colCounty] ?? '',
+        map[PersonalDetailsSqlHelper.colPostcode] ?? '');
 
     return model;
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id.toString(),
-      'forename': forename,
-      'surname': surname,
-      'cis4p': cis4p,
-      'nationalInsurance': nationalInsurance,
-      'company': company,
-      'mobile': mobile,
-      'email': email,
-      'address': address,
-      'town': town,
-      'county': county,
-      'postcode': postcode
+      PersonalDetailsSqlHelper.colId: id.toString(),
+      PersonalDetailsSqlHelper.colForename: forename,
+      PersonalDetailsSqlHelper.colSurname: surname,
+      PersonalDetailsSqlHelper.colCis4p: cis4p,
+      PersonalDetailsSqlHelper.colNationalInsurance: nationalInsurance,
+      PersonalDetailsSqlHelper.colCompany: company,
+      PersonalDetailsSqlHelper.colMobile: mobile,
+      PersonalDetailsSqlHelper.colEmail: email,
+      PersonalDetailsSqlHelper.colAddress: address,
+      PersonalDetailsSqlHelper.colTown: town,
+      PersonalDetailsSqlHelper.colCounty: county,
+      PersonalDetailsSqlHelper.colPostcode: postcode
     };
   }
 }

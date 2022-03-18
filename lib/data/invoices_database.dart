@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:invoicer/data/companies_sql_helper.dart';
 import 'package:invoicer/data/personal_details_sql_helper.dart';
 import 'package:path/path.dart';
 
@@ -21,13 +22,13 @@ class InvoicesDatabase {
   Future<Database> _init() async {
     Directory dir = await getApplicationDocumentsDirectory();
     String dbPath = join(dir.path, 'invoices.db');
-
     return await openDatabase(dbPath, version: version, onCreate: _createDb);
   }
 
   Future _createDb(Database _db, int version) async {
     await _addPersonalDetailsTable(_db);
     await _addLocationsTable(_db);
+    await _addCompaniesTable(_db);
   }
 
   // Singleton pattern
@@ -60,7 +61,7 @@ class InvoicesDatabase {
     await _seedPersonalDetailsTable(_db);
   }
 
-  Future<void> _seedPersonalDetailsTable(Database _db) async {
+  Future _seedPersonalDetailsTable(Database _db) async {
     var personalDetailsSeed =
         PersonalDetailsModel(1, '', '', '', '', '', '', '', '', '', '', '');
 
@@ -68,10 +69,23 @@ class InvoicesDatabase {
         personalDetailsSeed.toMap());
   }
 
-  Future<void> _addLocationsTable(Database _db) async {
+  Future _addLocationsTable(Database _db) async {
     String query = 'CREATE TABLE ${LocationsSqlHelper.tableLocations} '
-        '(${LocationsSqlHelper.colId} INTEGER PRIMARY KEY, '
+        '(${LocationsSqlHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
         '${LocationsSqlHelper.colName} TEXT);';
+    await _db.execute(query);
+  }
+
+  Future _addCompaniesTable(Database _db) async {
+    String query = 'CREATE TABLE ${CompaniesSqlHelper.tableCompanies} '
+        '(${CompaniesSqlHelper.colId} INTEGER PRIMARY KEY AUTOINCREMENT, '
+        '${CompaniesSqlHelper.colName} TEXT, '
+        '${CompaniesSqlHelper.colAddress} TEXT, '
+        '${CompaniesSqlHelper.colTown} TEXT, '
+        '${CompaniesSqlHelper.colCounty} TEXT, '
+        '${CompaniesSqlHelper.colPostcode} TEXT, '
+        '${CompaniesSqlHelper.colEmail} TEXT);';
+
     await _db.execute(query);
   }
 }

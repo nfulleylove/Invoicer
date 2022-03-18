@@ -36,7 +36,7 @@ class _LocationsState extends State<Locations> {
                     return Dismissible(
                         key: UniqueKey(),
                         direction: DismissDirection.endToStart,
-                        onDismissed: (_) => sqlHelper.deleteLocation(location),
+                        onDismissed: (_) => deleteLocation(location),
                         confirmDismiss: confirmDeletion,
                         child: ListTile(title: Text(location.name)),
                         background: Container(
@@ -59,6 +59,12 @@ class _LocationsState extends State<Locations> {
             }));
   }
 
+  Future deleteLocation(LocationModel location) async {
+    setState(() {
+      sqlHelper.deleteLocation(location);
+    });
+  }
+
   Future addLocation() async {
     TextEditingController locationController = TextEditingController();
 
@@ -73,6 +79,7 @@ class _LocationsState extends State<Locations> {
               children: <Widget>[
                 TextField(
                     controller: locationController,
+                    keyboardType: TextInputType.streetAddress,
                     decoration: const InputDecoration(labelText: 'Location'))
               ],
             ),
@@ -87,9 +94,11 @@ class _LocationsState extends State<Locations> {
             ElevatedButton(
               child: const Text('Add'),
               onPressed: () {
-                sqlHelper
-                    .insertLocation(LocationModel(0, locationController.text));
-                Navigator.of(context).pop();
+                setState(() {
+                  sqlHelper.insertLocation(
+                      LocationModel(0, locationController.text));
+                  Navigator.of(context).pop();
+                });
               },
             ),
           ],
@@ -101,7 +110,10 @@ class _LocationsState extends State<Locations> {
   Future<List<LocationModel>> getLocations() async {
     sqlHelper = LocationsSqlHelper();
 
-    return await sqlHelper.getLocations();
+    var _locations = await sqlHelper.getLocations();
+    _locations.sort((a, b) => a.name.compareTo(b.name));
+
+    return _locations;
   }
 
   Future<bool?> confirmDeletion(DismissDirection direction) async {

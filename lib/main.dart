@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:invoicer/screens/companies_screen.dart';
 import 'package:invoicer/screens/locations_screen.dart';
 import 'package:invoicer/screens/personal_details_screen.dart';
 import 'screens/create_invoice_screen.dart';
@@ -13,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Create an Invoice',
+      title: 'Invoicer',
       theme: ThemeData(
         primarySwatch: Colors.indigo,
       ),
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
         '/': (context) => const CreateInvoice(),
         '/locations': (context) => const Locations(),
         '/personal_details': (context) => const PersonalDetails(),
+        '/companies': (context) => const CompaniesScreen()
       },
     );
   }

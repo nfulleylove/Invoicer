@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:invoicer/data/personal_details_sql_helper.dart';
-// import 'package:invoicer/data/locations_sql_helper.dart';
 import 'package:invoicer/models/personal_details_model.dart';
 import 'package:invoicer/widgets/drawer.dart';
-import 'package:invoicer/widgets/forms/company_details_form_fields.dart';
 import 'package:invoicer/widgets/forms/days_worked_form_fields.dart';
 import 'package:invoicer/widgets/forms/payment_details_form_fields.dart';
 import '../widgets/forms/personal_details_form_fields.dart';
@@ -36,29 +34,14 @@ class _CreateInvoiceState extends State<CreateInvoice> {
       body: Stepper(
           currentStep: _index,
           onStepCancel: () {
-            if (_index > 0) {
-              setState(() {
-                _index -= 1;
-              });
-            }
+            if (_index > 0) setState(() => _index -= 1);
           },
           onStepContinue: () {
             setState(() {
               bool isValid =
                   _formKeys[_index].currentState?.validate() ?? false;
 
-              if (isValid) {
-                if (_index < 1) {
-                  _index += 1;
-                } else {
-                  _index = 0;
-                }
-              }
-            });
-          },
-          onStepTapped: (int index) {
-            setState(() {
-              _index = index;
+              if (isValid) _index += 1;
             });
           },
           steps: steps),
@@ -87,11 +70,10 @@ class _CreateInvoiceState extends State<CreateInvoice> {
                     return const CircularProgressIndicator();
                   }
                 }))),
-    Step(
-        title: const Text('Company Details'),
+    const Step(
+        title: Text('Company Details'),
         isActive: false,
-        content:
-            Form(key: _formKeys[1], child: const CompanyDetailsFormFields())),
+        content: Text('Company Details')),
     Step(
         title: const Text('Payment Details'),
         isActive: false,

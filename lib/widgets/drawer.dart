@@ -43,8 +43,7 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.location_city),
             title: const Text('Companies'),
             onTap: () {
-              // Update the state of the app.
-              // ...
+              Navigator.pushReplacementNamed(context, '/companies');
             },
           ),
           ListTile(

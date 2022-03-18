@@ -11,7 +11,10 @@ class LocationsSqlHelper {
   static String tableLocations = "Locations";
 
   Future<int> insertLocation(LocationModel location) async {
-    return await db!.insert(tableLocations, location.toMap());
+    var map = location.toMap();
+    map.remove(colId);
+
+    return await db!.insert(tableLocations, map);
   }
 
   Future<List<LocationModel>> getLocations() async {

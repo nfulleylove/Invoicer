@@ -24,8 +24,8 @@ class PersonalDetailsSqlHelper {
   Future<PersonalDetailsModel> getPersonalDetails() async {
     var database = await db;
 
-    List<Map<String, dynamic>> map =
-        await database!.query(tablePersonalDetails);
+    List<Map<String, dynamic>> map = await database!.query(tablePersonalDetails,
+        where: '$colId = ?', whereArgs: [1], limit: 1);
 
     return PersonalDetailsModel.fromMap(
         map.isNotEmpty ? map.first : <String, dynamic>{});
