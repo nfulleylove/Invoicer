@@ -3,17 +3,18 @@ import 'package:invoicer/data/invoices_sql_helper.dart';
 import 'package:invoicer/models/invoice_model.dart';
 import 'package:invoicer/screens/update_invoice_screen.dart';
 import 'package:invoicer/widgets/drawer.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'create_invoice_screen.dart';
 
-class Invoices extends StatefulWidget {
-  const Invoices({Key? key}) : super(key: key);
+class InvoicesScreen extends StatefulWidget {
+  const InvoicesScreen({Key? key}) : super(key: key);
 
   @override
-  State<Invoices> createState() => _InvoicesState();
+  State<InvoicesScreen> createState() => _InvoicesScreenState();
 }
 
-class _InvoicesState extends State<Invoices> {
+class _InvoicesScreenState extends State<InvoicesScreen> {
   InvoicesSqlHelper sqlHelper = InvoicesSqlHelper();
   List<InvoiceModel> invoices = [];
 
@@ -35,16 +36,29 @@ class _InvoicesState extends State<Invoices> {
                       itemBuilder: (context, index) {
                         var invoice = invoices[index];
                         return InkWell(
-                            onTap: () => goToUpdateInvoice(invoices[index].id),
+                            onTap: () => goToUpdateInvoice(
+                                invoice.id, invoice.dateAsText),
                             child: Dismissible(
                                 key: UniqueKey(),
                                 direction: DismissDirection.endToStart,
                                 onDismissed: (_) => deleteInvoice(invoice),
                                 confirmDismiss: confirmDeletion,
                                 child: ListTile(
-                                  title: Text(invoice.dateAsText),
-                                  subtitle: Text(invoice.id.toString()),
-                                ),
+                                    leading: Icon(MdiIcons.fileDocumentOutline,
+                                        color:
+                                            Theme.of(context).primaryColorDark),
+                                    title: Text(invoice.dateAsText,
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .primaryColorDark)),
+                                    subtitle: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              '£${invoice.totalLabourCosts.toStringAsFixed(2)}'),
+                                          Text(invoice.locationsText)
+                                        ])),
                                 background: Container(
                                   color: Colors.red,
                                   padding: const EdgeInsets.symmetric(
@@ -67,33 +81,64 @@ class _InvoicesState extends State<Invoices> {
   }
 
   Future deleteInvoice(InvoiceModel invoice) async {
-    setState(() {
-      sqlHelper.deleteInvoice(invoice);
-    });
+    try {
+      bool wasDeleted = await sqlHelper.deleteInvoice(invoice);
+
+      if (wasDeleted) {
+        setState(() {
+          invoices.remove(invoice);
+
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Invoice deleted"),
+          ));
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Error deleting invoice"),
+        ));
+      }
+    } catch (ex) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Error deleting incoice"),
+      ));
+    }
   }
 
   Future addInvoice() async {
     Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => const CreateInvoice()))
+        .push(MaterialPageRoute(
+            builder: (context) => const CreateInvoiceScreen()))
         .then((value) => getInvoices());
   }
 
   Future<void> getInvoices() async {
-    sqlHelper = InvoicesSqlHelper();
-    DateTime fromDate = DateTime.now().subtract(const Duration(days: 31));
+    try {
+      sqlHelper = InvoicesSqlHelper();
+      DateTime fromDate = DateTime.now().subtract(const Duration(days: 31));
 
-    invoices = await sqlHelper.getInvoices(fromDate, DateTime.now());
+      invoices = await sqlHelper.getInvoices(fromDate, DateTime.now());
+    } catch (ex) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Error retrieving incoices"),
+      ));
+    }
   }
 
   Future<void> refreshInvoices() async {
-    sqlHelper = InvoicesSqlHelper();
-    DateTime fromDate = DateTime.now().subtract(const Duration(days: 31));
+    try {
+      sqlHelper = InvoicesSqlHelper();
+      DateTime fromDate = DateTime.now().subtract(const Duration(days: 31));
 
-    var refreshData = await sqlHelper.getInvoices(fromDate, DateTime.now());
+      var refreshData = await sqlHelper.getInvoices(fromDate, DateTime.now());
 
-    setState(() {
-      invoices = refreshData;
-    });
+      setState(() {
+        invoices = refreshData;
+      });
+    } catch (ex) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Error retrieving incoices"),
+      ));
+    }
   }
 
   Future<bool?> confirmDeletion(DismissDirection direction) async {
@@ -111,6 +156,8 @@ class _InvoicesState extends State<Invoices> {
             ),
             ElevatedButton(
               child: const Text('Delete'),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).errorColor),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
@@ -119,8 +166,8 @@ class _InvoicesState extends State<Invoices> {
     );
   }
 
-  void goToUpdateInvoice(int id) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => UpdateInvoice(id: id)));
+  void goToUpdateInvoice(int id, String dateText) {
+    Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => UpdateInvoiceScreen(id: id, dateText: dateText)));
   }
 }

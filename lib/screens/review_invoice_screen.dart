@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
-import 'package:intl/intl.dart';
-import 'package:invoicer/helpers/pdfHelper.dart';
+import 'package:invoicer/extensions/datetime_extensions.dart';
+import 'package:invoicer/helpers/pdf_helper.dart';
 import 'package:invoicer/models/invoice_model.dart';
 import 'package:invoicer/widgets/drawer.dart';
 import 'package:path_provider/path_provider.dart';
@@ -11,19 +11,20 @@ import 'package:printing/printing.dart';
 
 import 'invoices_screen.dart';
 
-class ReviewInvoice extends StatefulWidget {
-  const ReviewInvoice({Key? key, required this.invoice}) : super(key: key);
+class ReviewInvoiceScreen extends StatefulWidget {
+  const ReviewInvoiceScreen({Key? key, required this.invoice})
+      : super(key: key);
 
   final InvoiceModel invoice;
 
   @override
-  State<ReviewInvoice> createState() => _ReviewInvoiceState();
+  State<ReviewInvoiceScreen> createState() => _ReviewInvoiceScreenState();
 }
 
-class _ReviewInvoiceState extends State<ReviewInvoice> {
+class _ReviewInvoiceScreenState extends State<ReviewInvoiceScreen> {
   Future<bool> _onWillPop() async {
     Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const Invoices()),
+        MaterialPageRoute(builder: (context) => const InvoicesScreen()),
         (Route<dynamic> route) => false);
 
     return false;
@@ -50,7 +51,7 @@ class _ReviewInvoiceState extends State<ReviewInvoice> {
                     icon: const Icon(Icons.share))
               ],
               build: (format) async {
-                var pdf = await makePdf(invoice);
+                var pdf = await PdfHelper.makePdf(invoice);
                 var directory = await getApplicationDocumentsDirectory();
 
                 var file = File('${directory.path}/${invoice.fileName}');
@@ -63,15 +64,16 @@ class _ReviewInvoiceState extends State<ReviewInvoice> {
 
   Future<void> send(InvoiceModel invoice) async {
     try {
-      var formatter = DateFormat('yyyyMMdd');
       var directory = await getApplicationDocumentsDirectory();
 
       var email = Email(
-          subject:
-              '${invoice.personalDetails.fullName} - Invoice ${formatter.format(DateTime.now())}',
+          subject: '${invoice.personalDetails.fullName} - Invoice '
+              '${DateTime.now().toFormattedString('yyyyMMdd')}',
           recipients: [invoice.company.email],
           body: 'Hi,<br><br>'
-              'Please find an invoice attached for work undertaken between ${invoice.workDays.first.dateAsString} and ${invoice.workDays.last.dateAsString}.<br><br>'
+              'Please find an invoice attached for work undertaken between '
+              '${invoice.workDays.first.dateAsString} and '
+              '${invoice.workDays.last.dateAsString}.<br><br>'
               'Regards,<br>'
               '${invoice.personalDetails.fullName}',
           attachmentPaths: ['${directory.path}/${invoice.fileName}'],

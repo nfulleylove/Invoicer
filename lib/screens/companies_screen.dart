@@ -45,9 +45,15 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
                         child: InkWell(
                             onTap: (() => updateCompany(company)),
                             child: ListTile(
-                                leading: const Icon(Icons.business),
+                                leading: Icon(Icons.business,
+                                    color: Theme.of(context).primaryColorDark),
                                 onTap: () => {updateCompany(company)},
-                                title: Text(company.name),
+                                title: Text(
+                                  company.name,
+                                  style: TextStyle(
+                                      color:
+                                          Theme.of(context).primaryColorDark),
+                                ),
                                 subtitle: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -231,6 +237,8 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
             ),
             ElevatedButton(
               child: const Text('Delete'),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).errorColor),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],

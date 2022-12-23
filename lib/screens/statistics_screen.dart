@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:invoicer/data/statistics_sql_helper.dart';
+import 'package:invoicer/extensions/datetime_extensions.dart';
 import 'package:invoicer/widgets/drawer.dart';
 
 class StatisticsScreen extends StatefulWidget {
@@ -82,11 +82,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   void updateDateControllerText() {
-    var formatter = DateFormat('dd/MM/yyyy');
-
-    _dateController.text = formatter.format(dateRange.start) +
+    _dateController.text = dateRange.start.toShortDateString() +
         ' - ' +
-        formatter.format(dateRange.end);
+        dateRange.end.toShortDateString();
   }
 
   Future updateMileage() async {

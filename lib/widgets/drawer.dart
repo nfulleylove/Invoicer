@@ -32,7 +32,8 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Home'),
             onTap: () {
               Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const Invoices()),
+                  MaterialPageRoute(
+                      builder: (context) => const InvoicesScreen()),
                   (Route<dynamic> route) => false);
             },
           ),
@@ -42,7 +43,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                      builder: (context) => const PersonalDetails()),
+                      builder: (context) => const PersonalDetailsScreen()),
                   (Route<dynamic> route) => false);
             },
           ),
@@ -52,7 +53,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                      builder: (context) => const PaymentDetails()),
+                      builder: (context) => const PaymentDetailsScreen()),
                   (Route<dynamic> route) => false);
             },
           ),

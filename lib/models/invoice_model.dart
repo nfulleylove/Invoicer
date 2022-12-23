@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:invoicer/data/invoices_sql_helper.dart';
+import 'package:invoicer/extensions/datetime_extensions.dart';
 import 'package:invoicer/models/company_model.dart';
 import 'package:invoicer/models/payment_details_model.dart';
 import 'package:invoicer/models/personal_details_model.dart';
@@ -23,13 +23,34 @@ class InvoiceModel {
 
   late List<WorkDayModel> workDays = [];
 
-  String get dateAsText => DateFormat('dd/MM/yyyy').format(date);
-  String get title => 'INVOICE - ${DateFormat('yyyyMMdd').format(date)}';
+  String get dateAsText => date.toShortDateString();
+  String get title => 'INVOICE - ${date.toFormattedString('yyyyMMdd')}';
   String get fileName =>
-      '${personalDetails.fullName} - Invoice ${DateFormat('yyyyMMdd').format(date)}.pdf';
+      '${personalDetails.fullName} - Invoice ${date.toFormattedString('yyyyMMdd')}.pdf';
 
   double get totalLabourCosts =>
       workDays.fold<double>(0, (sum, element) => sum + element.grossPay);
+
+  String get locationsText {
+    List<String> locations = [];
+
+    for (var workDay in workDays) {
+      if (workDay.location.isNotEmpty) {
+        locations.add(workDay.location);
+      }
+    }
+
+    locations = locations.toSet().toList();
+
+    switch (locations.length) {
+      case 0:
+        return '';
+      case 1:
+        return locations.first;
+      default:
+        return '${locations.first} + ${locations.length - 1} more';
+    }
+  }
 
   InvoiceModel(this.id, this.date, this.personalDetailsId, this.companyId,
       this.paymentDetailsId);

@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
       ),
       initialRoute: '/',
-      routes: {'/': (context) => const Invoices()},
+      routes: {'/': (context) => const InvoicesScreen()},
     );
   }
 }

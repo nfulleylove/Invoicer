@@ -1,5 +1,5 @@
-import 'package:intl/intl.dart';
 import 'package:invoicer/data/work_days_sql_helper.dart';
+import 'package:invoicer/extensions/datetime_extensions.dart';
 
 class WorkDayModel {
   int id = 0;
@@ -10,10 +10,7 @@ class WorkDayModel {
   double get grossPay => rate * hours.toDouble();
   int miles = 10;
   String location = '';
-
-  var formatter = DateFormat('dd/MM/yyyy');
-
-  String get dateAsString => formatter.format(date);
+  String get dateAsString => date.toShortDateString();
 
   WorkDayModel(this.id, this.invoiceId, this.date, this.rate, this.hours,
       this.miles, this.location);

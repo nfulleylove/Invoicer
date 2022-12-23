@@ -5,14 +5,14 @@ import 'package:invoicer/widgets/forms/payment_details_form_fields.dart';
 
 import '../widgets/drawer.dart';
 
-class PaymentDetails extends StatefulWidget {
-  const PaymentDetails({Key? key}) : super(key: key);
+class PaymentDetailsScreen extends StatefulWidget {
+  const PaymentDetailsScreen({Key? key}) : super(key: key);
 
   @override
-  State<PaymentDetails> createState() => _PaymentDetailsState();
+  State<PaymentDetailsScreen> createState() => _PaymentDetailsScreenState();
 }
 
-class _PaymentDetailsState extends State<PaymentDetails> {
+class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
   static final PaymentDetailsSqlHelper _paymentDetailsSqlHelper =
       PaymentDetailsSqlHelper();
   late PaymentDetailsModel paymentDetails;

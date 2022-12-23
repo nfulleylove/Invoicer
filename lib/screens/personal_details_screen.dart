@@ -5,14 +5,14 @@ import 'package:invoicer/widgets/forms/personal_details_form_fields.dart';
 
 import '../widgets/drawer.dart';
 
-class PersonalDetails extends StatefulWidget {
-  const PersonalDetails({Key? key}) : super(key: key);
+class PersonalDetailsScreen extends StatefulWidget {
+  const PersonalDetailsScreen({Key? key}) : super(key: key);
 
   @override
-  State<PersonalDetails> createState() => _PersonalDetailsState();
+  State<PersonalDetailsScreen> createState() => _PersonalDetailsScreenState();
 }
 
-class _PersonalDetailsState extends State<PersonalDetails> {
+class _PersonalDetailsScreenState extends State<PersonalDetailsScreen> {
   static final PersonalDetailsSqlHelper _personalDetailsSqlHelper =
       PersonalDetailsSqlHelper();
   late PersonalDetailsModel personalDetails;

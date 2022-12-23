@@ -51,8 +51,6 @@ class InvoicesSqlHelper {
     invoice.paymentDetailsId =
         await PaymentDetailsSqlHelper().insert(invoice.paymentDetails);
 
-    var map = invoice.toMap();
-
     invoice.id = await database!.insert(tableInvoices, invoice.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
 
@@ -68,22 +66,35 @@ class InvoicesSqlHelper {
       DateTime startDate, DateTime endDate) async {
     var database = await _db;
 
-    List<Map<String, dynamic>> map = await database!.query(tableInvoices);
+    List<Map<String, dynamic>> map =
+        await database!.query(tableInvoices, columns: [colId]);
 
     List<InvoiceModel> invoices = [];
 
     for (var element in map) {
-      invoices.add(InvoiceModel.fromMap(element));
+      var invoice = await getInvoice(element[InvoicesSqlHelper.colId]);
+
+      invoices.add(invoice);
     }
 
     return invoices;
   }
 
-  Future<int> deleteInvoice(InvoiceModel invoice) async {
+  Future<bool> deleteInvoice(InvoiceModel invoice) async {
     var database = await _db;
 
     int result = await database!
         .delete(tableInvoices, where: '$colId = ?', whereArgs: [invoice.id]);
+
+    return result == 1;
+  }
+
+  updateCompany(int id, int companyId) async {
+    var database = await _db;
+
+    int result = await database!.rawUpdate(
+        'UPDATE $tableInvoices SET $colCompanyId = ? WHERE $colId = ?',
+        [companyId, id]);
 
     return result;
   }

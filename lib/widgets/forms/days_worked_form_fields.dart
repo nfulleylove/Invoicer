@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:invoicer/data/work_days_sql_helper.dart';
-import 'package:invoicer/screens/add_work_days_dialogue.dart';
-import 'package:invoicer/screens/update_work_day_dialogue.dart';
+import 'package:invoicer/screens/dialogues/add_work_days_dialogue.dart';
+import 'package:invoicer/screens/dialogues/update_work_day_dialogue.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:intl/intl.dart';
 
 import '../../models/work_day_model.dart';
 
@@ -43,8 +42,6 @@ class _DaysWorkedFormFieldsState extends State<DaysWorkedFormFields> {
           workDays.sort(((a, b) => a.date.compareTo(b.date)));
           var workDay = workDays[index];
 
-          var formatter = DateFormat('dd/MM/yyyy');
-
           return InkWell(
               onTap: () => updateWorkDay(index),
               child: Dismissible(
@@ -54,7 +51,7 @@ class _DaysWorkedFormFieldsState extends State<DaysWorkedFormFields> {
                   confirmDismiss: confirmDeletion,
                   child: ListTile(
                       contentPadding: const EdgeInsets.all(20),
-                      title: Text(formatter.format(workDay.date)),
+                      title: Text(workDay.dateAsString),
                       subtitle: Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Column(
@@ -187,6 +184,8 @@ class _DaysWorkedFormFieldsState extends State<DaysWorkedFormFields> {
             ),
             ElevatedButton(
               child: const Text('Delete'),
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).errorColor),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
