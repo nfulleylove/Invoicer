@@ -13,7 +13,7 @@ class StatisticsScreen extends StatefulWidget {
 class _StatisticsScreenState extends State<StatisticsScreen> {
   StatisticsSqlHelper sqlHelper = StatisticsSqlHelper();
   int miles = 0;
-  double costs = 0;
+  double totalPay = 0;
 
   final TextEditingController _dateController = TextEditingController();
 
@@ -54,7 +54,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           Padding(
                               padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
                               child: Text('Total miles: $miles')),
-                          Text('Total costs: £${costs.toStringAsFixed(2)}')
+                          Text('Total pay: £${totalPay.toStringAsFixed(2)}')
                         ]))));
   }
 
@@ -71,6 +71,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           dateRange = result;
           updateDateControllerText();
           updateMileage();
+          updateTotalPay();
         });
       }
     } catch (ex) {
@@ -90,6 +91,14 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   Future updateMileage() async {
     miles = await sqlHelper.getTotalMiles(
+        dateRange.start,
+        dateRange.end
+            .add(const Duration(days: 1))
+            .subtract(const Duration(seconds: 1)));
+  }
+
+  Future updateTotalPay() async {
+    totalPay = await sqlHelper.getTotalPay(
         dateRange.start,
         dateRange.end
             .add(const Duration(days: 1))
