@@ -145,7 +145,9 @@ class _InvoiceStepperState extends State<InvoiceStepper> {
 
   void createInvoice() async {
     try {
-      _invoice = await _invoicesSqlHelper.insertInvoice(_invoice);
+      if (widget.id == 0) {
+        _invoice = await _invoicesSqlHelper.insertInvoice(_invoice);
+      }
 
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => ReviewInvoiceScreen(invoice: _invoice)));
