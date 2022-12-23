@@ -9,6 +9,8 @@ class CompanyModel {
   String postcode;
   String email;
 
+  String get addressText => '$name\n$address\n$town\n$county\n$postcode';
+
   CompanyModel(this.id, this.name, this.address, this.town, this.county,
       this.postcode, this.email);
 
@@ -26,7 +28,6 @@ class CompanyModel {
 
   Map<String, dynamic> toMap() {
     return {
-      CompaniesSqlHelper.colId: id,
       CompaniesSqlHelper.colName: name,
       CompaniesSqlHelper.colAddress: address,
       CompaniesSqlHelper.colTown: town,
@@ -35,4 +36,20 @@ class CompanyModel {
       CompaniesSqlHelper.colEmail: email
     };
   }
+
+  @override
+  bool operator ==(dynamic other) =>
+      other != null &&
+      other is CompanyModel &&
+      id == other.id &&
+      name == other.name &&
+      address == other.address &&
+      town == other.town &&
+      county == other.county &&
+      postcode == other.postcode &&
+      email == other.email;
+
+  @override
+  // ignore: unnecessary_overrides
+  int get hashCode => super.hashCode;
 }

@@ -21,17 +21,27 @@ class PersonalDetailsSqlHelper {
   static const String colCounty = 'county';
   static const String colPostcode = 'postcode';
 
-  Future<PersonalDetailsModel> getPersonalDetails() async {
+  Future<PersonalDetailsModel> getPersonalDetails(int id) async {
     var database = await db;
 
     List<Map<String, dynamic>> map = await database!.query(tablePersonalDetails,
-        where: '$colId = ?', whereArgs: [1], limit: 1);
+        where: '$colId = ?', whereArgs: [id], limit: 1);
 
     return PersonalDetailsModel.fromMap(
         map.isNotEmpty ? map.first : <String, dynamic>{});
   }
 
-  Future<int> updatePersonalDetails(
+  Future<int> insert(PersonalDetailsModel personalDetails) async {
+    var database = await db;
+
+    int result = await database!.insert(
+        tablePersonalDetails, personalDetails.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+
+    return result;
+  }
+
+  Future<bool> updatePersonalDetails(
       PersonalDetailsModel personalDetails) async {
     var database = await db;
 
@@ -39,6 +49,6 @@ class PersonalDetailsSqlHelper {
         tablePersonalDetails, personalDetails.toMap(),
         where: '$colId = ?', whereArgs: [personalDetails.id]);
 
-    return result;
+    return result == 1;
   }
 }

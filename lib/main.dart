@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:invoicer/screens/companies_screen.dart';
-import 'package:invoicer/screens/locations_screen.dart';
-import 'package:invoicer/screens/personal_details_screen.dart';
-import 'screens/create_invoice_screen.dart';
+import 'package:invoicer/screens/invoices_screen.dart';
+import 'package:invoicer/services/notification_service.dart';
 
-void main() {
+Future<void> main() async {
+  await NotificationService().setup();
   runApp(const MyApp());
 }
 
@@ -16,15 +15,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Invoicer',
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
+        primarySwatch: Colors.blueGrey,
       ),
       initialRoute: '/',
-      routes: {
-        '/': (context) => const CreateInvoice(),
-        '/locations': (context) => const Locations(),
-        '/personal_details': (context) => const PersonalDetails(),
-        '/companies': (context) => const CompaniesScreen()
-      },
+      routes: {'/': (context) => const Invoices()},
     );
   }
 }

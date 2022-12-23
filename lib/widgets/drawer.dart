@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:invoicer/screens/companies_screen.dart';
+
+import '../screens/invoices_screen.dart';
+import '../screens/payment_details_screen.dart';
+import '../screens/personal_details_screen.dart';
+import '../screens/statistics_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({Key? key}) : super(key: key);
@@ -6,16 +12,12 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      // Add a ListView to the drawer. This ensures the user can scroll
-      // through the options in the drawer if there isn't enough vertical
-      // space to fit everything.
       child: ListView(
-        // Important: Remove any padding from the ListView.
         padding: EdgeInsets.zero,
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.indigo,
+              color: Colors.blueGrey,
             ),
             child: Padding(
               padding: EdgeInsets.only(left: 5, top: 15),
@@ -26,33 +28,54 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.create),
-            title: const Text('Create an Invoice'),
+            leading: const Icon(Icons.home),
+            title: const Text('Home'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/');
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (context) => const Invoices()),
+                  (Route<dynamic> route) => false);
             },
           ),
           ListTile(
             leading: const Icon(Icons.perm_identity),
             title: const Text('Personal Details'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/personal_details');
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => const PersonalDetails()),
+                  (Route<dynamic> route) => false);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.wallet),
+            title: const Text('Payment Details'),
+            onTap: () {
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => const PaymentDetails()),
+                  (Route<dynamic> route) => false);
             },
           ),
           ListTile(
             leading: const Icon(Icons.location_city),
             title: const Text('Companies'),
             onTap: () {
-              Navigator.pushReplacementNamed(context, '/companies');
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => CompaniesScreen(
+                            showDrawer: true,
+                          )),
+                  (Route<dynamic> route) => false);
             },
           ),
           ListTile(
-            leading: const Icon(Icons.room),
-            title: const Text('Locations'),
+            leading: const Icon(Icons.bar_chart),
+            title: const Text('Statistics'),
             onTap: () {
-              Navigator.pop(context);
-
-              Navigator.pushReplacementNamed(context, '/locations');
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                      builder: (context) => const StatisticsScreen()),
+                  (Route<dynamic> route) => false);
             },
           ),
         ],

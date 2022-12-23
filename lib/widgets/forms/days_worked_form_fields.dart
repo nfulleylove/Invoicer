@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_spinbox/flutter_spinbox.dart';
+import 'package:invoicer/data/work_days_sql_helper.dart';
+import 'package:invoicer/screens/add_work_days_dialogue.dart';
+import 'package:invoicer/screens/update_work_day_dialogue.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:intl/intl.dart';
+
+import '../../models/work_day_model.dart';
 
 class DaysWorkedFormFields extends StatefulWidget {
-  const DaysWorkedFormFields({Key? key}) : super(key: key);
+  final int invoiceId;
+  final double rate;
+
+  const DaysWorkedFormFields(
+      {Key? key,
+      required this.invoiceId,
+      required this.rate,
+      required this.daysWorked})
+      : super(key: key);
+
+  final List<WorkDayModel> daysWorked;
 
   @override
   State<DaysWorkedFormFields> createState() => _DaysWorkedFormFieldsState();
@@ -12,80 +27,171 @@ class DaysWorkedFormFields extends StatefulWidget {
 class _DaysWorkedFormFieldsState extends State<DaysWorkedFormFields> {
   @override
   Widget build(BuildContext context) {
-    return Column(children: [
-      const Align(
+    var workDays = widget.daysWorked;
+
+    return SingleChildScrollView(
+        child: Column(children: [
+      Align(
           alignment: Alignment.topRight,
-          child:
-              TextButton(onPressed: doNothing, child: Text('Add Work Days'))),
-      ListView.builder(
-          shrinkWrap: true,
-          itemCount: 7,
-          itemBuilder: (context, index) {
-            return ListTile(
-                title: Card(
-                    child: Column(children: <Widget>[
-              const ListTile(
-                leading: Icon(Icons.calendar_month),
-                title: Text('10/02/2022'),
-              ),
-              Column(
-                children: [
-                  ExpansionTile(title: const Text('Details'), children: [
-                    SpinBox(
-                      min: 0,
-                      max: 50,
-                      step: 5,
-                      decoration: const InputDecoration(
-                          labelText: 'Hourly Rate',
-                          icon: Icon(Icons.currency_pound)),
+          child: TextButton(
+              onPressed: addWorkDay, child: const Text('Add Work Days'))),
+      ListView.separated(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: workDays.length,
+        itemBuilder: (context, index) {
+          workDays.sort(((a, b) => a.date.compareTo(b.date)));
+          var workDay = workDays[index];
+
+          var formatter = DateFormat('dd/MM/yyyy');
+
+          return InkWell(
+              onTap: () => updateWorkDay(index),
+              child: Dismissible(
+                  key: UniqueKey(),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) => deleteWorkDay(workDay),
+                  confirmDismiss: confirmDeletion,
+                  child: ListTile(
+                      contentPadding: const EdgeInsets.all(20),
+                      title: Text(formatter.format(workDay.date)),
+                      subtitle: Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Wrap(
+                                    spacing: 10,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        Icons.currency_pound_sharp,
+                                        size: 25,
+                                      ),
+                                      Text(workDay.grossPay.toStringAsFixed(2))
+                                    ]),
+                                Wrap(
+                                    spacing: 10,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        MdiIcons.car,
+                                        size: 25,
+                                      ),
+                                      Text(workDay.miles.toString() + ' miles')
+                                    ]),
+                                Wrap(
+                                    spacing: 10,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      const Icon(
+                                        MdiIcons.mapMarker,
+                                        size: 25,
+                                      ),
+                                      Text(
+                                        workDay.location,
+                                      )
+                                    ]),
+                              ]))),
+                  background: Container(
+                    color: Colors.red,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
-                    SpinBox(
-                      min: 0,
-                      max: 50,
-                      step: 5,
-                      decoration: const InputDecoration(
-                          labelText: 'Hours Worked',
-                          icon: Icon(MdiIcons.clock)),
-                    ),
-                    SpinBox(
-                      min: 0,
-                      max: 50,
-                      step: 5,
-                      decoration: const InputDecoration(
-                          labelText: 'Miles', icon: Icon(MdiIcons.car)),
-                    ),
-                  ]),
-                  ExpansionTile(title: const Text('Locations'), children: [
-                    const Align(
-                      alignment: Alignment.topRight,
-                      child: TextButton(
-                          onPressed: doNothing,
-                          child: Text(
-                            'Add Location',
-                            textAlign: TextAlign.right,
-                          )),
-                    ),
-                    Wrap(spacing: 10, children: const [
-                      Chip(
-                        label: Text('Stevenage'),
-                        onDeleted: doNothing,
-                      ),
-                      Chip(
-                        label: Text('Hertford - 21 aaaaaa aaaaaaaaaafffffffff'),
-                        onDeleted: doNothing,
-                      ),
-                      Chip(
-                        label: Text('Welwyn'),
-                        onDeleted: doNothing,
-                      ),
-                    ]),
-                  ])
-                ],
-              ),
-            ])));
-          })
-    ]);
+                  )));
+        },
+        separatorBuilder: (BuildContext context, int index) => const Divider(),
+      )
+    ]));
+  }
+
+  Future addWorkDay() async {
+    var result = await showDialog<List<WorkDayModel>>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AddWorkDaysDialogue(
+            invoiceId: widget.invoiceId, rate: widget.rate);
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        widget.daysWorked.addAll(result);
+      });
+    }
+  }
+
+  Future updateWorkDay(int index) async {
+    var workDay = widget.daysWorked[index];
+
+    var result = await showDialog<WorkDayModel>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return UpdateWorkDayDialogue(workDay: workDay);
+      },
+    );
+
+    if (result != null) {
+      setState(() {
+        workDay.date = result.date;
+        workDay.location = result.location;
+        workDay.miles = result.miles;
+        workDay.rate = result.rate;
+        workDay.hours = result.hours;
+      });
+    }
+  }
+
+  Future deleteWorkDay(WorkDayModel workDay) async {
+    bool isDeleted = false;
+
+    if (widget.invoiceId > 0) {
+      isDeleted = await WorkDaysSqlHelper().deleteWorkDay(workDay);
+    }
+
+    if (isDeleted || widget.invoiceId == 0) {
+      setState(() {
+        widget.daysWorked.remove(workDay);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Work day deleted"),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Error deleting work day"),
+      ));
+    }
+  }
+
+  Future<bool?> confirmDeletion(DismissDirection direction) async {
+    return await showDialog(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Work Day'),
+          content: const Text('Are you sure you want to delete the Work Day?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(false),
+            ),
+            ElevatedButton(
+              child: const Text('Delete'),
+              onPressed: () => Navigator.of(context).pop(true),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
-
-void doNothing() {}

@@ -29,12 +29,16 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
+  intl: ^0.18.0
   mask_text_input_formatter: ^2.1.0
   flutter_spinbox: ^0.8.0
   material_design_icons_flutter: ^5.0.6595
   sqflite: ^2.0.2
   path_provider: ^2.0.9
+  pdf: ^3.8.4
+  printing: ^5.9.3
+  flutter_email_sender: ^5.2.0
+  flutter_local_notifications: ^13.0.0
 
 dev_dependencies:
   flutter_test:

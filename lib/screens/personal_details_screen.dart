@@ -62,11 +62,21 @@ class _PersonalDetailsState extends State<PersonalDetails> {
 
     form?.save();
 
-    return await _personalDetailsSqlHelper
-        .updatePersonalDetails(personalDetails);
+    bool wasUpdated =
+        await _personalDetailsSqlHelper.updatePersonalDetails(personalDetails);
+
+    if (wasUpdated) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Personal details updated"),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Error updating personal details"),
+      ));
+    }
   }
 
   Future<PersonalDetailsModel> getPersonalDetails() async {
-    return await _personalDetailsSqlHelper.getPersonalDetails();
+    return await _personalDetailsSqlHelper.getPersonalDetails(1);
   }
 }

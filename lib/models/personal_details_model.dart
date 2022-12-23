@@ -14,6 +14,11 @@ class PersonalDetailsModel {
   String county;
   String postcode;
 
+  String get fullName => '$forename $surname';
+
+  String get addressText =>
+      '${forename.toUpperCase()} ${surname.toUpperCase()}\n$address\n$town\n$county\n$postcode\n\n$mobile\n$email';
+
   PersonalDetailsModel(
       this.id,
       this.forename,
@@ -30,7 +35,7 @@ class PersonalDetailsModel {
 
   factory PersonalDetailsModel.fromMap(Map<String, dynamic> map) {
     var model = PersonalDetailsModel(
-        map[PersonalDetailsSqlHelper.colId] ?? 1,
+        map[PersonalDetailsSqlHelper.colId] ?? 0,
         map[PersonalDetailsSqlHelper.colForename] ?? '',
         map[PersonalDetailsSqlHelper.colSurname] ?? '',
         map[PersonalDetailsSqlHelper.colCis4p] ?? '',
@@ -48,7 +53,6 @@ class PersonalDetailsModel {
 
   Map<String, dynamic> toMap() {
     return {
-      PersonalDetailsSqlHelper.colId: id.toString(),
       PersonalDetailsSqlHelper.colForename: forename,
       PersonalDetailsSqlHelper.colSurname: surname,
       PersonalDetailsSqlHelper.colCis4p: cis4p,

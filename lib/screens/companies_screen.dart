@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:invoicer/data/companies_sql_helper.dart';
-import 'package:invoicer/data/companies_sql_helper.dart';
 import 'package:invoicer/models/company_model.dart';
 import 'package:invoicer/widgets/drawer.dart';
 import 'package:invoicer/widgets/forms/company_details_form_fields.dart';
 
-import '../models/company_model.dart';
-
+// ignore: must_be_immutable
 class CompaniesScreen extends StatefulWidget {
-  const CompaniesScreen({Key? key}) : super(key: key);
+  bool showDrawer = true;
+
+  CompaniesScreen({Key? key, required this.showDrawer}) : super(key: key);
 
   @override
   State<CompaniesScreen> createState() => _CompaniesScreenState();
@@ -22,7 +22,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: const Text('Companies')),
-        drawer: const AppDrawer(),
+        drawer: widget.showDrawer ? const AppDrawer() : null,
         floatingActionButton: FloatingActionButton(
             onPressed: addCompany, child: const Icon(Icons.add)),
         body: FutureBuilder(
@@ -42,20 +42,21 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
                         direction: DismissDirection.endToStart,
                         onDismissed: (_) => deleteCompany(company),
                         confirmDismiss: confirmDeletion,
-                        child: ListTile(
-                            leading: const Icon(Icons.business),
-                            trailing: TextButton(
-                                onPressed: () => {updateCompany(company)},
-                                child: const Text('Manage')),
-                            title: Text(company.name),
-                            subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(company.address),
-                                  Text(company.town),
-                                  Text(company.county),
-                                  Text(company.postcode)
-                                ])),
+                        child: InkWell(
+                            onTap: (() => updateCompany(company)),
+                            child: ListTile(
+                                leading: const Icon(Icons.business),
+                                onTap: () => {updateCompany(company)},
+                                title: Text(company.name),
+                                subtitle: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(company.address),
+                                      Text(company.town),
+                                      Text(company.county),
+                                      Text(company.postcode)
+                                    ]))),
                         background: Container(
                           color: Colors.red,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -77,9 +78,21 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
   }
 
   Future deleteCompany(CompanyModel company) async {
-    setState(() {
-      sqlHelper.deleteCompany(company);
-    });
+    bool wasDeleted = await sqlHelper.deleteCompany(company);
+
+    if (wasDeleted) {
+      setState(() {
+        companies.remove(company);
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Company deleted"),
+      ));
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Error deleting company"),
+      ));
+    }
   }
 
   Future addCompany() async {
@@ -105,19 +118,32 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
               },
             ),
             ElevatedButton(
-              child: const Text('Add'),
-              onPressed: () {
-                setState(() {
+                child: const Text('Add'),
+                onPressed: () async {
                   var form = _formKey.currentState;
 
                   if (form!.validate()) {
                     form.save();
-                    sqlHelper.insertCompany(company);
-                    Navigator.of(context).pop();
+                    int companyId = await sqlHelper.insertCompany(company);
+
+                    if (companyId > 0) {
+                      setState(() {
+                        company.id = companyId;
+                        companies.add(company);
+                      });
+
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Company added"),
+                      ));
+
+                      Navigator.of(context).pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Error adding company"),
+                      ));
+                    }
                   }
-                });
-              },
-            ),
+                }),
           ],
         );
       },
@@ -146,19 +172,29 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
               },
             ),
             ElevatedButton(
-              child: const Text('Update'),
-              onPressed: () {
-                setState(() {
+                child: const Text('Update'),
+                onPressed: () async {
                   var form = _formKey.currentState;
 
                   if (form!.validate()) {
                     form.save();
-                    sqlHelper.updateCompany(company);
-                    Navigator.of(context).pop();
+                    bool wasUpdated = await sqlHelper.updateCompany(company);
+
+                    if (wasUpdated) {
+                      setState(() {});
+
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Company updated"),
+                      ));
+
+                      Navigator.of(context).pop();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Error updating company"),
+                      ));
+                    }
                   }
-                });
-              },
-            ),
+                }),
           ],
         );
       },
@@ -166,12 +202,18 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
   }
 
   Future<List<CompanyModel>> getCompanies() async {
-    sqlHelper = CompaniesSqlHelper();
+    try {
+      var _companies = await sqlHelper.getCompanies();
+      _companies.sort((a, b) => a.name.compareTo(b.name));
 
-    var _companies = await sqlHelper.getCompanies();
-    _companies.sort((a, b) => a.name.compareTo(b.name));
+      return _companies;
+    } catch (ex) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Error retrieving companies"),
+      ));
 
-    return _companies;
+      return Future.error(ex);
+    }
   }
 
   Future<bool?> confirmDeletion(DismissDirection direction) async {

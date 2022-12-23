@@ -4,11 +4,12 @@ import 'package:sqflite/sqflite.dart';
 import 'invoices_database.dart';
 
 class CompaniesSqlHelper {
-  Database? db = InvoicesDatabase.db;
+  final Future<Database?> db = InvoicesDatabase().database;
 
   static const String tableCompanies = 'Companies';
 
   static const String colId = 'id';
+  static const String colStatus = 'status';
   static const String colName = 'name';
   static const String colAddress = 'address';
   static const String colTown = 'town';
@@ -17,16 +18,20 @@ class CompaniesSqlHelper {
   static const String colEmail = 'email';
 
   Future<int> insertCompany(CompanyModel company) async {
-    var map = company.toMap();
-    map.remove(colId);
+    var database = await db;
 
-    return await db!.insert(tableCompanies, map);
+    var map = company.toMap();
+
+    return await database!.insert(tableCompanies, map);
   }
 
   Future<List<CompanyModel>> getCompanies() async {
+    var database = await db;
+
     List<CompanyModel> companies = [];
 
-    List<Map<String, dynamic>> map = await db!.query(tableCompanies);
+    List<Map<String, dynamic>> map =
+        await database!.query(tableCompanies, where: '$colStatus = 1');
 
     for (var company in map) {
       companies.add(CompanyModel.fromMap(company));
@@ -35,17 +40,31 @@ class CompaniesSqlHelper {
     return companies;
   }
 
-  Future<int> updateCompany(CompanyModel company) async {
-    int result = await db!.update(tableCompanies, company.toMap(),
+  Future<bool> updateCompany(CompanyModel company) async {
+    var database = await db;
+
+    int result = await database!.update(tableCompanies, company.toMap(),
         where: '$colId = ?', whereArgs: [company.id]);
 
-    return result;
+    return result == 1;
   }
 
-  Future<int> deleteCompany(CompanyModel company) async {
-    int result = await db!
-        .delete(tableCompanies, where: '$colId = ?', whereArgs: [company.id]);
+  Future<bool> deleteCompany(CompanyModel company) async {
+    var database = await db;
 
-    return result;
+    int result = await database!.rawUpdate(
+        'UPDATE $tableCompanies SET $colStatus = 0 WHERE $colId = ?',
+        [company.id]);
+
+    return result == 1;
+  }
+
+  Future<CompanyModel> getCompany(int companyId) async {
+    var database = await db;
+
+    var map = await database!
+        .query(tableCompanies, where: '$colId = ?', whereArgs: [companyId]);
+
+    return CompanyModel.fromMap(map.first);
   }
 }
