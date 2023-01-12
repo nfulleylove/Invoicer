@@ -1,6 +1,6 @@
 <img src="https://user-images.githubusercontent.com/26605728/209410071-f0b188ba-d919-4a26-a2ff-e4b483f48d42.png" width="50" height="50" />
 
-# invoicer
+# Invoicer
 
 Time is money. Invoicer is a very specific invoice generator, developed with one person in mind.
 
