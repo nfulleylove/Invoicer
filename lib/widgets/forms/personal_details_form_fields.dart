@@ -40,7 +40,7 @@ class _PersonalDetailsFormFieldsState extends State<PersonalDetailsFormFields> {
             onSaved: (val) =>
                 setState(() => widget.personalDetails.cis4p = val ?? ''),
             decoration: const InputDecoration(label: Text('CIS4P*')),
-            maxLength: 10,
+            maxLength: 13,
             keyboardType: TextInputType.text,
             textCapitalization: TextCapitalization.characters,
             validator: (value) =>
