@@ -157,7 +157,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
             ElevatedButton(
               child: const Text('Delete'),
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).errorColor),
+                  backgroundColor: Theme.of(context).colorScheme.error),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],

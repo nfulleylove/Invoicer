@@ -238,7 +238,7 @@ class _CompaniesScreenState extends State<CompaniesScreen> {
             ElevatedButton(
               child: const Text('Delete'),
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).errorColor),
+                  backgroundColor: Theme.of(context).colorScheme.error),
               onPressed: () => Navigator.of(context).pop(true),
             ),
           ],
