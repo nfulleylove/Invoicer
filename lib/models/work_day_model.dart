@@ -5,15 +5,13 @@ class WorkDayModel {
   int id = 0;
   int invoiceId = 0;
   DateTime date = DateTime.now();
-  double rate = 11;
-  int hours = 8;
-  double get grossPay => rate * hours.toDouble();
+  double rate = 100;
   int miles = 10;
   String location = '';
   String get dateAsString => date.toShortDateString();
 
-  WorkDayModel(this.id, this.invoiceId, this.date, this.rate, this.hours,
-      this.miles, this.location);
+  WorkDayModel(
+      this.id, this.invoiceId, this.date, this.rate, this.miles, this.location);
 
   factory WorkDayModel.fromMap(Map<String, dynamic> map) {
     var model = WorkDayModel(
@@ -22,7 +20,6 @@ class WorkDayModel {
         DateTime.fromMillisecondsSinceEpoch(
             int.parse(map[WorkDaysSqlHelper.colDate])),
         map[WorkDaysSqlHelper.colRate] ?? 0,
-        map[WorkDaysSqlHelper.colHours] ?? 0,
         map[WorkDaysSqlHelper.colMiles] ?? 0,
         map[WorkDaysSqlHelper.colLocation] ?? '');
 
@@ -35,8 +32,7 @@ class WorkDayModel {
       WorkDaysSqlHelper.colDate: date.millisecondsSinceEpoch,
       WorkDaysSqlHelper.colLocation: location,
       WorkDaysSqlHelper.colMiles: miles.toString(),
-      WorkDaysSqlHelper.colRate: rate.toString(),
-      WorkDaysSqlHelper.colHours: hours.toString()
+      WorkDaysSqlHelper.colRate: rate.toString()
     };
   }
 }

@@ -61,14 +61,15 @@ class _PaymentDetailsFormFieldsState extends State<PaymentDetailsFormFields> {
           },
         ),
         SpinBox(
-          value: widget.paymentDetails.rate,
-          onChanged: (value) => setState(() {
-            widget.paymentDetails.rate = value;
-          }),
-          decoration: const InputDecoration(label: Text('Rate')),
-          step: 0.5,
-          decimals: 2,
-        )
+            value: widget.paymentDetails.rate,
+            onChanged: (value) => setState(() {
+                  widget.paymentDetails.rate = value;
+                }),
+            decoration: const InputDecoration(label: Text('Rate')),
+            step: 1,
+            decimals: 2,
+            min: 10,
+            max: 200)
       ],
     );
   }

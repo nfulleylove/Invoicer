@@ -24,8 +24,7 @@ class StatisticsSqlHelper {
   }
 
   Future<double> getTotalPay(DateTime startDate, DateTime endDate) async {
-    String query =
-        'SELECT SUM(${WorkDaysSqlHelper.colRate} * ${WorkDaysSqlHelper.colHours}) AS TotalPay '
+    String query = 'SELECT SUM(${WorkDaysSqlHelper.colRate}) AS TotalPay '
         'FROM ${WorkDaysSqlHelper.tableWorkDays} AS wd '
         'JOIN ${InvoicesSqlHelper.tableInvoices} AS i ON i.${InvoicesSqlHelper.colId} = wd.${WorkDaysSqlHelper.colInvoiceId} '
         'WHERE wd.${WorkDaysSqlHelper.colDate} >= ? '

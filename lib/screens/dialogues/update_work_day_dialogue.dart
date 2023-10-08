@@ -8,14 +8,8 @@ class UpdateWorkDayDialogue extends StatefulWidget {
   UpdateWorkDayDialogue({Key? key, required this.workDay}) : super(key: key);
 
   WorkDayModel workDay;
-  late WorkDayModel updatedWorkDay = WorkDayModel(
-      workDay.id,
-      workDay.invoiceId,
-      workDay.date,
-      workDay.rate,
-      workDay.hours,
-      workDay.miles,
-      workDay.location);
+  late WorkDayModel updatedWorkDay = WorkDayModel(workDay.id, workDay.invoiceId,
+      workDay.date, workDay.rate, workDay.miles, workDay.location);
 
   @override
   State<UpdateWorkDayDialogue> createState() => _UpdateWorkDayDialogueState();
@@ -85,31 +79,21 @@ class _UpdateWorkDayDialogueState extends State<UpdateWorkDayDialogue> {
                         const Text('Pay',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         SpinBox(
-                          value: workDay.rate,
-                          onChanged: (value) => setState(() {
-                            workDay.rate = value;
-                          }),
-                          decimals: 2,
-                          step: 0.5,
-                          decoration:
-                              const InputDecoration(label: Text('Rate*')),
-                          keyboardType: TextInputType.number,
-                          min: 10,
-                        ),
-                        SpinBox(
-                          value: workDay.hours.toDouble(),
-                          onChanged: (value) => setState(() {
-                            workDay.hours = value.toInt();
-                          }),
-                          decoration: const InputDecoration(
-                              label: Text('Hours Worked*')),
-                          keyboardType: TextInputType.number,
-                          min: 1,
-                        ),
+                            value: workDay.rate,
+                            onChanged: (value) => setState(() {
+                                  workDay.rate = value;
+                                }),
+                            decimals: 2,
+                            step: 1,
+                            decoration:
+                                const InputDecoration(label: Text('Rate*')),
+                            keyboardType: TextInputType.number,
+                            min: 10,
+                            max: 200),
                         Padding(
                             padding: const EdgeInsets.all(5),
-                            child: Text('Total: £' +
-                                workDay.grossPay.toStringAsFixed(2))),
+                            child: Text(
+                                'Total: £' + workDay.rate.toStringAsFixed(2))),
                         Padding(
                             padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
                             child: Row(children: [

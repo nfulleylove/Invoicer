@@ -66,7 +66,7 @@ class _DaysWorkedFormFieldsState extends State<DaysWorkedFormFields> {
                                         Icons.currency_pound_sharp,
                                         size: 25,
                                       ),
-                                      Text(workDay.grossPay.toStringAsFixed(2))
+                                      Text(workDay.rate.toStringAsFixed(2))
                                     ]),
                                 Wrap(
                                     spacing: 10,
@@ -142,7 +142,6 @@ class _DaysWorkedFormFieldsState extends State<DaysWorkedFormFields> {
         workDay.location = result.location;
         workDay.miles = result.miles;
         workDay.rate = result.rate;
-        workDay.hours = result.hours;
       });
     }
   }

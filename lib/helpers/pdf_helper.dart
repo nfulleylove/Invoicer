@@ -112,7 +112,7 @@ class PdfHelper {
   }
 
   static pw.Widget _table(pw.Context context, InvoiceModel invoice) {
-    const tableHeaders = ['Date', 'Location', 'Miles', 'Hours', 'Cost'];
+    const tableHeaders = ['Date', 'Location', 'Miles', 'Cost'];
 
     return pw.Table.fromTextArray(
       border: null,
@@ -126,15 +126,13 @@ class PdfHelper {
         0: const pw.FlexColumnWidth(15),
         1: const pw.FlexColumnWidth(65),
         2: const pw.FlexColumnWidth(10),
-        3: const pw.FlexColumnWidth(12),
-        4: const pw.FlexColumnWidth(10)
+        3: const pw.FlexColumnWidth(10)
       },
       cellAlignments: {
         0: pw.Alignment.centerLeft,
         1: pw.Alignment.centerLeft,
         2: pw.Alignment.center,
         3: pw.Alignment.center,
-        4: pw.Alignment.center,
       },
       headerStyle: pw.TextStyle(
         fontSize: 12,
@@ -160,8 +158,7 @@ class PdfHelper {
                 invoice.workDays[row].dateAsString,
                 invoice.workDays[row].location,
                 invoice.workDays[row].miles.toString(),
-                invoice.workDays[row].hours.toString(),
-                invoice.workDays[row].grossPay.toStringAsFixed(2)
+                invoice.workDays[row].rate.toStringAsFixed(2)
               ]),
     );
   }

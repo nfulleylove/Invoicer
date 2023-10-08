@@ -19,8 +19,7 @@ class AddWorkDaysDialogue extends StatefulWidget {
   late DateTimeRange dateRange =
       DateTimeRange(start: lastMonday, end: DateTime.now().today());
 
-  late WorkDayModel workDay =
-      WorkDayModel(0, 0, DateTime.now(), rate, 8, 1, '');
+  late WorkDayModel workDay = WorkDayModel(0, 0, DateTime.now(), rate, 1, '');
   List<WorkDayModel> workDays = [];
 
   @override
@@ -91,31 +90,21 @@ class _AddWorkDaysDialogueState extends State<AddWorkDaysDialogue> {
                         const Text('Pay',
                             style: TextStyle(fontWeight: FontWeight.bold)),
                         SpinBox(
-                          value: workDay.rate,
-                          onChanged: (value) => setState(() {
-                            workDay.rate = value;
-                          }),
-                          decimals: 2,
-                          step: 0.5,
-                          decoration:
-                              const InputDecoration(label: Text('Rate*')),
-                          keyboardType: TextInputType.number,
-                          min: 10,
-                        ),
-                        SpinBox(
-                          value: workDay.hours.toDouble(),
-                          onChanged: (value) => setState(() {
-                            workDay.hours = value.toInt();
-                          }),
-                          decoration: const InputDecoration(
-                              label: Text('Hours Worked*')),
-                          keyboardType: TextInputType.number,
-                          min: 1,
-                        ),
+                            value: workDay.rate,
+                            onChanged: (value) => setState(() {
+                                  workDay.rate = value;
+                                }),
+                            decimals: 2,
+                            step: 1,
+                            decoration:
+                                const InputDecoration(label: Text('Rate*')),
+                            keyboardType: TextInputType.number,
+                            min: 10,
+                            max: 100),
                         Padding(
                             padding: const EdgeInsets.all(5),
-                            child: Text('Total: £' +
-                                workDay.grossPay.toStringAsFixed(2))),
+                            child: Text(
+                                'Total: £' + workDay.rate.toStringAsFixed(2))),
                         Padding(
                             padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
                             child: Row(children: [
@@ -144,14 +133,8 @@ class _AddWorkDaysDialogueState extends State<AddWorkDaysDialogue> {
       for (DateTime date = widget.dateRange.start;
           date.day <= widget.dateRange.end.day;
           date = date.add(const Duration(days: 1))) {
-        var workDay = WorkDayModel(
-            0,
-            widget.invoiceId,
-            date,
-            widget.workDay.rate,
-            widget.workDay.hours,
-            widget.workDay.miles,
-            widget.workDay.location);
+        var workDay = WorkDayModel(0, widget.invoiceId, date,
+            widget.workDay.rate, widget.workDay.miles, widget.workDay.location);
 
         if (widget.invoiceId > 0) {
           workDay.id = await WorkDaysSqlHelper().insert(workDay);

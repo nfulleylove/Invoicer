@@ -29,7 +29,7 @@ class InvoiceModel {
       '${personalDetails.fullName} - Invoice ${date.toFormattedString('yyyyMMdd')}.pdf';
 
   double get totalLabourCosts =>
-      workDays.fold<double>(0, (sum, element) => sum + element.grossPay);
+      workDays.fold<double>(0, (sum, element) => sum + element.rate);
 
   String get locationsText {
     List<String> locations = [];
@@ -84,7 +84,7 @@ class InvoiceModel {
         DataCell(Text(workDay.dateAsString)),
         DataCell(Text(workDay.location)),
         DataCell(Text(workDay.miles.toString())),
-        DataCell(Text('£${workDay.grossPay.toStringAsFixed(2)}'))
+        DataCell(Text('£${workDay.rate.toStringAsFixed(2)}'))
       ]));
     }
 
